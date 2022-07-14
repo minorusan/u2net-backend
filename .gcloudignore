@@ -1,0 +1,6 @@
+u2netp.pth
+README.md
+*.pyc
+*.pyo
+*.pyd
+__pycache__
