@@ -8,7 +8,7 @@ import logging
 import numpy as np
 from PIL import Image
 
-from flask import Flask, request, send_file, jsonify
+from flask import Flask, request, send_file, jsonify, json
 from flask_cors import CORS
 
 import detect
@@ -32,18 +32,12 @@ def remove():
 
     start = time.time()
 
-    if 'file' not in request.files:
-        return jsonify({'error': 'missing file'}), 400
-
-    if request.files['file'].filename.rsplit('.', 1)[1].lower() not in ["jpg", "png", "jpeg"]:
-        return jsonify({'error': 'invalid file format'}), 400
-
-    data = request.files['file'].read()
+    logging.info('got there!')
     
-    if len(data) == 0:
-        return jsonify({'error': 'empty image'}), 400
-
-    img = Image.open(io.BytesIO(data))
+    json_object = json.loads(request.data)
+    bytes = bytearray(json_object['file']['data'])
+    
+    img = Image.open(io.BytesIO(bytes))
 
     output = detect.predict(net, np.array(img))
     output = output.resize((img.size), resample=Image.BILINEAR) # remove resample
